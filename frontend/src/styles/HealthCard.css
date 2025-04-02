@@ -1,0 +1,114 @@
+.health-card-container {
+  padding: 16px;
+  background: var(--background-primary);
+  min-height: 100vh;
+}
+
+.virtual-card {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  color: var(--text-light);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.card-logo {
+  height: 32px;
+}
+
+.card-type {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.card-body {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
+}
+
+.user-info {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.user-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-details {
+  margin-top: 24px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.card-info {
+  flex: 1;
+  font-size: 14px;
+}
+
+.card-info h2 {
+  margin: 0 0 5px 0;
+  font-size: 20px;
+}
+
+.plan-name {
+  font-size: 16px;
+  opacity: 0.9;
+  margin: 0 0 10px 0;
+}
+
+.card-number, .valid-until {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.qr-section {
+  background: white;
+  padding: 16px;
+  border-radius: var(--border-radius-md);
+  width: fit-content;
+  margin: 24px auto;
+}
+
+.card-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--primary-color);
+  color: var(--text-light);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-button:active {
+  transform: scale(0.98);
+}

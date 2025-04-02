@@ -1,0 +1,226 @@
+:root {
+  /* Cores principais mobile-first */
+  --primary-color: #1976D2;
+  --secondary-color: #0D47A1;
+  --background-color: #F5F5F5;
+  --surface-color: #FFFFFF;
+  --text-color: #212121;
+  --divider-color: #E0E0E0;
+  /* Espaçamentos & bordas */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --border-radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  overflow-y: auto; /* Explicitamente permitir rolagem vertical */
+  height: auto;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  height: auto;
+}
+
+#root {
+  max-width: 600px; /* Largura máxima tipo celular */
+  margin: 0 auto;
+  background: var(--surface);
+  min-height: 100vh;
+  position: relative;
+  overflow-y: auto; /* Permitir rolagem vertical */
+}
+
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --background-color: #f0f2f5;
+  --text-color: #1a1a1a;
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --app-height: 100vh; /* Dynamic height for mobile */
+  --app-width: 100%;   /* Dynamic width for mobile */
+  --max-app-width: 390px; /* iPhone 12 width */
+  --iphone12-width: 390px;
+  --iphone12-height: 844px;
+  --bottom-nav-height: 70px;
+  --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  -webkit-tap-highlight-color: transparent;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--app-height);
+  width: 100%;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.app-container {
+  width: var(--iphone12-width);
+  height: var(--iphone12-height);
+  margin: 0 auto;
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--background-color);
+  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+}
+
+/* Header Styles */
+.header {
+  background: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin: 15px 0;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Button Styles */
+.button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button-primary {
+  background: var(--primary-color);
+  color: white;
+}
+
+.button-danger {
+  background: var(--danger-color);
+  color: white;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+/* Responsive Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+}
+
+.success {
+  color: green;
+  font-size: 0.9em;
+}
+
+/* Mobile-specific styles */
+.mobile-container {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--iphone12-width);
+  background: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
+  padding-bottom: calc(10px + var(--safe-area-bottom));
+  z-index: 1000;
+}
+
+.mobile-button {
+  -webkit-appearance: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: manipulation;
+}

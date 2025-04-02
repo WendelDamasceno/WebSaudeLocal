@@ -1,0 +1,94 @@
+.telemedicine-container {
+    width: 390px;
+    height: 844px;
+    margin: 0 auto;
+    padding: 16px;
+    background: var(--background-color);
+    overflow-y: auto;
+}
+
+.specialty-select {
+    margin-bottom: 20px;
+}
+
+.specialty-select select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+}
+
+.doctors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.doctor-card {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 12px;
+}
+
+.doctor-info {
+    margin-bottom: 15px;
+}
+
+.doctor-info h3 {
+    margin: 0 0 5px 0;
+    color: var(--text-color);
+}
+
+.doctor-info p {
+    color: var(--secondary-color);
+    margin: 0 0 10px 0;
+}
+
+.doctor-rating {
+    color: #ffd700;
+}
+
+.consult-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.consult-button.available {
+    background: var(--primary-color);
+    color: white;
+}
+
+.consult-button.unavailable {
+    background: var(--secondary-color);
+    color: white;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.telemedicine-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.doctor-name {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.doctor-specialty {
+    font-size: 14px;
+    color: var(--text-color);
+}

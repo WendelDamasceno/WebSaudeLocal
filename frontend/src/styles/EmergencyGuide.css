@@ -1,0 +1,94 @@
+.emergency-guide-container {
+  padding: 16px;
+}
+
+.guide-section {
+  background: white;
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.guide-title {
+  color: var(--hapvida-primary);
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.guide-content {
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+.emergency-steps {
+  list-style: none;
+  padding: 0;
+}
+
+.emergency-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.step-number {
+  background: var(--hapvida-primary);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.emergency-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.emergency-service {
+  text-align: center;
+  background: var(--background-tertiary);
+  padding: 16px;
+  border-radius: var(--border-radius-sm);
+}
+
+.service-icon {
+  font-size: 24px;
+  color: var(--danger-color);
+  margin-bottom: 8px;
+}
+
+.emergency-number {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--danger-color);
+  text-decoration: none;
+}
+
+.first-aid-guide {
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--background-tertiary);
+  border-radius: var(--border-radius-sm);
+}
+
+.guide-steps {
+  margin: 12px 0 0 20px;
+  padding: 0;
+}
+
+.guide-steps li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}

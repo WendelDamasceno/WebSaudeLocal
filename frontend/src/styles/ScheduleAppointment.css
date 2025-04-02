@@ -1,0 +1,864 @@
+.schedule-appointment-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F5F7FA;
+  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.schedule-header {
+  background: linear-gradient(135deg, #5E60CE 0%, #4D94DB 100%);
+  color: white;
+  padding: 20px 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
+
+.back-button {
+  position: absolute;
+  left: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+/* Progress Tracker */
+.progress-tracker {
+  padding: 16px 20px;
+  background: white;
+}
+
+.progress-bar {
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-filled {
+  height: 100%;
+  background: linear-gradient(90deg, #5E60CE, #4D94DB);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.step-indicator {
+  text-align: right;
+  font-size: 12px;
+  color: #64748B;
+}
+
+/* Content */
+.schedule-content {
+  flex: 1;
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+
+.step-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-content h2 {
+  font-size: 18px;
+  color: #1E293B;
+  margin-bottom: 20px;
+}
+
+/* Appointment Type Options */
+.appointment-type-options {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.mode-options {
+  margin-top: 20px;
+}
+
+.type-option {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.type-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.type-option.selected {
+  background: #F0F4FF;
+  border: 2px solid #5E60CE;
+}
+
+.type-icon {
+  font-size: 24px;
+  color: #5E60CE;
+}
+
+.check-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #5E60CE;
+  font-size: 16px;
+}
+
+/* Specialty Grid */
+.specialty-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.specialty-item {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.specialty-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.specialty-item.selected {
+  background: #F0F4FF;
+  border: 2px solid #5E60CE;
+}
+
+/* Doctors List */
+.doctors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doctor-item {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.doctor-item:hover {
+  transform: translateX(3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.doctor-item.selected {
+  background: #F0F4FF;
+  border: 2px solid #5E60CE;
+}
+
+.doctor-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  margin-right: 16px;
+}
+
+.doctor-info {
+  flex: 1;
+}
+
+.doctor-info h3 {
+  font-size: 16px;
+  color: #1E293B;
+  margin: 0 0 4px 0;
+}
+
+.doctor-info span {
+  font-size: 14px;
+  color: #64748B;
+}
+
+.selected-icon {
+  font-size: 20px;
+  color: #5E60CE;
+}
+
+/* Facilities List */
+.facilities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.facility-item {
+  display: flex;
+  align-items: flex-start;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.facility-item:hover {
+  transform: translateX(3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.facility-item.selected {
+  background: #F0F4FF;
+  border: 1px solid #5E60CE;
+  border-left: 4px solid #5E60CE;
+}
+
+.facility-icon {
+  font-size: 20px;
+  color: #5E60CE;
+  margin-right: 16px;
+  margin-top: 3px;
+}
+
+.facility-info {
+  flex: 1;
+}
+
+.facility-info h3 {
+  font-size: 16px;
+  color: #1E293B;
+  margin: 0 0 4px 0;
+  font-weight: 600;
+}
+
+.facility-info p {
+  font-size: 14px;
+  color: #64748B;
+  margin: 0 0 4px 0;
+}
+
+.facility-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.facility-address-icon {
+  color: #64748B;
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.distance {
+  font-size: 12px;
+  color: #5E60CE;
+}
+
+.facility-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.camacari-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(94, 96, 206, 0.1);
+  color: #5E60CE;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+/* Date Picker */
+.date-picker {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+
+.date-picker::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.date-option {
+  min-width: 50px;
+  border-radius: 10px;
+  padding: 12px 5px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.date-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.date-option.selected {
+  background: #5E60CE;
+  color: white;
+}
+
+.day-name {
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.day-number {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.date-option.selected .check-icon {
+  color: white;
+}
+
+/* Time Grid */
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.time-option {
+  background: white;
+  border-radius: 8px;
+  padding: 12px 5px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.time-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.time-option.selected {
+  background: #5E60CE;
+  color: white;
+}
+
+.time-option.selected .check-icon {
+  color: white;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 12px;
+}
+
+/* Confirmation */
+.appointment-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.summary-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 15px 0;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-icon {
+  color: #5E60CE;
+  font-size: 18px;
+  margin-right: 15px;
+  margin-top: 3px;
+}
+
+.summary-detail {
+  flex: 1;
+}
+
+.label {
+  font-size: 13px;
+  color: #64748B;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.value {
+  font-size: 16px;
+  color: #1E293B;
+  font-weight: 500;
+}
+
+/* Footer */
+.schedule-footer {
+  background: white;
+  padding: 16px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.continue-button {
+  width: 100%;
+  background: linear-gradient(135deg, #5E60CE, #4D94DB);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.continue-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(94, 96, 206, 0.3);
+}
+
+.continue-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.button-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Exams Search and List */
+.exam-selection {
+  margin-top: 20px;
+}
+
+.search-container {
+  padding: 16px;
+}
+
+.search-bar {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 16px 48px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+.popular-specialties {
+  margin-top: 32px;
+}
+
+.popular-specialties h3 {
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.specialty-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.specialty-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.specialty-card:hover {
+  transform: translateY(-2px);
+}
+
+.result-item {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.result-item:hover {
+  background: var(--background-hover);
+}
+
+.exam-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exam-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.exam-category {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.exams-list {
+  margin-top: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #E2E8F0;
+}
+
+.exam-item {
+  padding: 15px;
+  border-bottom: 1px solid #E2E8F0;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.exam-item:last-child {
+  border-bottom: none;
+}
+
+.exam-item:hover {
+  background: #F8FAFC;
+}
+
+.exam-item.selected {
+  background: #F0F4FF;
+  border-left: 3px solid #5E60CE;
+}
+
+.exam-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.exam-name {
+  font-weight: 500;
+  color: #1E293B;
+  font-size: 15px;
+}
+
+.exam-category {
+  color: #64748B;
+  font-size: 13px;
+}
+
+.no-results {
+  margin-top: 5px;
+  padding: 20px;
+  text-align: center;
+  color: #64748B;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Exams Categories */
+.exam-categories {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  scrollbar-width: none; /* Firefox */
+}
+
+.exam-categories::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.category-badge {
+  padding: 8px 16px;
+  background: white;
+  border-radius: 20px;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.category-badge.active {
+  background: #5E60CE;
+  color: white;
+}
+
+/* Search Prompt */
+.search-prompt {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  text-align: center;
+  color: #94A3B8;
+  background: #F8FAFC;
+  border-radius: 10px;
+}
+
+.search-prompt-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: #94A3B8;
+}
+
+.search-prompt p {
+  font-size: 15px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 15px 14px 45px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  background: white;
+  font-size: 15px;
+  color: #1E293B;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* Insurance Selection */
+.insurance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.insurance-item {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.insurance-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.insurance-item.selected {
+  background: #F0F4FF;
+  border: 2px solid #5E60CE;
+}
+
+.insurance-icon {
+  font-size: 24px;
+  color: #5E60CE;
+}
+
+.insurance-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.insurance-name {
+  font-weight: 500;
+  color: #1E293B;
+}
+
+.insurance-header {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748B;
+  margin: 0 0 6px 0;
+  flex-basis: 100%;
+}
+
+.step-description {
+  color: #64748B;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.facility-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.insurance-tag {
+  background: #EBF8FF;
+  color: #0987A0;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.no-facilities {
+  background: #FFF5F5;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: center;
+  color: #E53E3E;
+  line-height: 1.5;
+}
+
+.no-facilities p {
+  margin: 0 0 10px 0;
+}
+
+.no-facilities p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .schedule-appointment-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .specialty-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .time-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .appointment-type-options {
+    flex-direction: column;
+  }
+  
+  .specialty-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .time-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .exam-name {
+    font-size: 14px;
+  }
+  
+  .exam-category {
+    font-size: 12px;
+  }
+  
+  .search-input {
+    padding: 12px 15px 12px 40px;
+  }
+  
+  .insurance-grid {
+    grid-template-columns: 1fr;
+  }
+}

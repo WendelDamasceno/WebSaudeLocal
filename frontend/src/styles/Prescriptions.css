@@ -1,0 +1,59 @@
+.prescriptions-container {
+  padding: 16px;
+}
+
+.prescription-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.prescription-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.prescription-date {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.medication-list {
+  list-style: none;
+  padding: 0;
+}
+
+.medication-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.medication-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.medication-dosage {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.prescription-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--hapvida-primary);
+  color: white;
+  font-weight: 500;
+}
