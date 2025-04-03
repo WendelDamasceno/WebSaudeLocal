@@ -9,7 +9,7 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import ForgotPassword from './pages/ForgotPassword';
-import FacilityDetails from './pages/FacilityDetails';
+import FacilityDetailsDynamic from './pages/FacilityDetailsDynamic';
 import UserProfile from './pages/UserProfile';
 import Settings from './pages/Settings';
 import Community from './pages/Community';
@@ -50,7 +50,7 @@ function App() {
           
           {/* Rotas protegidas */}
           <Route path="/home" element={<Home />} />
-          <Route path="/facility/:id" element={<FacilityDetails />} />
+          <Route path="/facility/:id" element={<FacilityDetailsDynamic />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/community" element={<Community />} />

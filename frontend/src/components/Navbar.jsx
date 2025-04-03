@@ -55,7 +55,7 @@ const Navbar = () => {
 
   return (
     <>
-      <AppBar position="sticky">
+      <AppBar position="sticky" color="primary">
         <Toolbar>
           {isMobile && (
             <IconButton color="inherit" edge="start" onClick={handleDrawerToggle}>

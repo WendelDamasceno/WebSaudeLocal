@@ -123,7 +123,7 @@ const MapButton = styled(IconButton)({
   }
 });
 
-const SearchBar = ({ onSearch, loading, searchResults, onSelectResult }) => {
+const SearchBar = ({ onSearch, loading, searchResults, onSelectResult, navigate }) => {
   const [searchInput, setSearchInput] = useState('');
   const [showResults, setShowResults] = useState(false);
   const anchorRef = useRef(null);
@@ -168,6 +168,16 @@ const SearchBar = ({ onSearch, loading, searchResults, onSelectResult }) => {
 
   const handleClickAway = () => {
     setShowResults(false);
+  };
+
+  const handleViewDetails = (result) => {
+    const facilityId = result.id || result.place_id || result.osm_id || result.uniqueId;
+    if (facilityId) {
+      console.log("Navegando para o hospital com ID:", facilityId);
+      navigate(`/facility/${String(facilityId)}`);
+    } else {
+      console.error('ID do hospital não encontrado:', result);
+    }
   };
 
   return (
@@ -269,9 +279,25 @@ const SearchBar = ({ onSearch, loading, searchResults, onSelectResult }) => {
                         </ListItemAvatar>
                         <ListItemText 
                           primary={result.display_name.split(',')[0]} 
-                          secondary={result.display_name.split(',').slice(1, 3).join(',')} 
+                          secondary={
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <Typography variant="body2" noWrap sx={{ maxWidth: '170px' }}>
+                                {result.display_name.split(',').slice(1, 3).join(',')}
+                              </Typography>
+                              <Button 
+                                size="small" 
+                                variant="outlined" 
+                                sx={{ ml: 1, minWidth: 'auto', fontSize: '0.7rem', py: 0.2 }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewDetails(result);
+                                }}
+                              >
+                                Detalhes
+                              </Button>
+                            </Box>
+                          }
                           primaryTypographyProps={{ fontWeight: 'medium' }}
-                          secondaryTypographyProps={{ noWrap: true }}
                         />
                       </ListItem>
                     ))
@@ -549,6 +575,8 @@ const Home = () => {
     if (mapInstance) {
       mapInstance.setView([newLocation.lat, newLocation.lng], 15, { animate: true });
   
+      const facilityId = result.id || result.place_id || result.osm_id || result.uniqueId;
+      
       const marker = L.marker([newLocation.lat, newLocation.lng], {
         title: result.display_name,
         icon: L.divIcon({
@@ -562,18 +590,29 @@ const Home = () => {
       }).addTo(mapInstance);
   
       marker.bindPopup(`
-        <div>
-          <strong>${result.display_name.split(',')[0]}</strong>
-          <p>${result.display_name.split(',').slice(1).join(', ')}</p>
+        <div style="width: 200px; padding: 5px;">
+          <strong style="font-size: 14px;">${result.display_name.split(',')[0]}</strong>
+          <p style="font-size: 12px; margin: 5px 0;">${result.display_name.split(',').slice(1, 3).join(', ')}</p>
+          <button class="view-details-btn" data-id="${facilityId}" style="background-color: #1976d2; color: white; border: none; padding: 8px 12px; border-radius: 4px; margin-top: 5px; width: 100%; cursor: pointer; font-weight: bold;">Ver detalhes</button>
         </div>
-      `).openPopup();
+      `, { maxWidth: 220 }).openPopup();
+  
+      // Adicionar evento de clique ao botão no popup
+      setTimeout(() => {
+        const btn = document.querySelector(`.view-details-btn[data-id="${facilityId}"]`);
+        if (btn) {
+          btn.addEventListener('click', () => {
+            navigate(`/facility/${facilityId}`);
+          });
+        }
+      }, 100);
   
       if (markersLayerGroup.current) {
         markersLayerGroup.current.clearLayers();
       }
       markersLayerGroup.current = L.layerGroup([marker]).addTo(mapInstance);
     }
-  }, [mapInstance]);
+  }, [mapInstance, navigate]);
 
   useEffect(() => {
     if (location) {
@@ -644,6 +683,10 @@ const Home = () => {
             name.includes('médic')
           );
         })
+        .map(result => ({
+          ...result,
+          uniqueId: result.place_id || result.osm_id || `place-${Math.random().toString(36).substring(2, 10)}`
+        }))
         .sort((a, b) => {
           // Priorizar hospitais e lugares com nomes mais curtos (geralmente mais relevantes)
           const aIsHospital = a.display_name.toLowerCase().includes('hospital');
@@ -848,6 +891,7 @@ const Home = () => {
             loading={searchLoading}
             searchResults={searchResults}
             onSelectResult={handleSelectSearchResult}
+            navigate={navigate} // Passando navigate como prop
           />
         </Box>
 

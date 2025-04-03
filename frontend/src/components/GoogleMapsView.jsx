@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Box } from '@mui/material';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -11,17 +11,103 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const GoogleMapsView = ({ center, zoom, markers, height, onMapReady }) => {
+const GoogleMapsView = ({ center, zoom, markers, height, onMapReady, onMarkerClick }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const mapMarkersRef = useRef([]);
+  
+  // Refs para armazenar as props atuais para uso no useEffect
+  const centerRef = useRef(center);
+  const zoomRef = useRef(zoom);
+  const markersRef = useRef(markers);
+  const onMapReadyRef = useRef(onMapReady);
+  const onMarkerClickRef = useRef(onMarkerClick);
+  
+  // Atualizar refs quando as props mudarem
+  useEffect(() => {
+    centerRef.current = center;
+    zoomRef.current = zoom;
+    markersRef.current = markers;
+    onMapReadyRef.current = onMapReady;
+    onMarkerClickRef.current = onMarkerClick;
+  }, [center, zoom, markers, onMapReady, onMarkerClick]);
 
+  // Função para adicionar marcadores ao mapa (usando useCallback para evitar recriações)
+  const addMarkersToMap = useCallback((mapInstance, markersData) => {
+    // Limpar marcadores existentes
+    if (mapMarkersRef.current.length > 0) {
+      mapMarkersRef.current.forEach(marker => {
+        if (mapInstance) marker.removeFrom(mapInstance);
+      });
+      mapMarkersRef.current = [];
+    }
+    
+    // Criar layer group para os marcadores (melhor desempenho)
+    const markersGroup = L.layerGroup();
+    
+    // Adicionar novos marcadores
+    if (mapInstance) {
+      markersData?.forEach(markerData => {
+        // Verificar se position existe e é válido
+        if (!markerData.position || markerData.position.length !== 2) {
+          console.error("Posição inválida para o marcador:", markerData);
+          return;
+        }
+        
+        // Criar um marcador personalizado para melhor visibilidade
+        const marker = L.marker(markerData.position, {
+          icon: L.divIcon({
+            className: 'hospital-marker',
+            html: '<div style="background-color: #1976d2; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-size: 14px;">H</span></div>',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+          })
+        });
+        
+        // Se houver conteúdo, adicionar um popup
+        if (markerData.content) {
+          marker.bindPopup(markerData.content, {
+            maxWidth: 250,
+            minWidth: 200,
+            closeButton: true
+          });
+          
+          // Abrir o popup imediatamente para mostrar as informações
+          setTimeout(() => {
+            marker.openPopup();
+          }, 500);
+        }
+        
+        // Adicionar evento de clique
+        if (markerData.onClick) {
+          marker.on('click', () => {
+            marker.openPopup();
+            markerData.onClick(markerData.id);
+          });
+        } else if (onMarkerClickRef.current && markerData.id) {
+          // Usar callback padrão se não tiver onClick específico
+          marker.on('click', () => {
+            marker.openPopup();
+            onMarkerClickRef.current(markerData.id);
+          });
+        }
+        
+        markersGroup.addLayer(marker);
+        mapMarkersRef.current.push(marker);
+      });
+      
+      // Adicionar o grupo de marcadores ao mapa de uma vez só (mais eficiente)
+      markersGroup.addTo(mapInstance);
+    }
+  }, []);
+
+  // Efeito para inicializar o mapa (executa apenas uma vez na montagem)
   useEffect(() => {
     if (mapContainerRef.current && !mapRef.current) {
       // Inicializar mapa Leaflet com opções otimizadas
       const options = {
-        center: center,
-        zoom: zoom || 15,
+        center: centerRef.current,
+        zoom: zoomRef.current || 15,
         zoomControl: false, // Explicitamente desabilitando controles de zoom
         attributionControl: false,
         minZoom: 5,
@@ -29,7 +115,7 @@ const GoogleMapsView = ({ center, zoom, markers, height, onMapReady }) => {
         preferCanvas: true,
         tap: true,
         dragging: true,
-        scrollWheelZoom: true,
+        scrollWheelZoom: false, // Desativando o zoom com scrollwheel para evitar problemas
         doubleClickZoom: true
       };
       
@@ -48,23 +134,20 @@ const GoogleMapsView = ({ center, zoom, markers, height, onMapReady }) => {
         prefix: false
       }).addTo(mapRef.current);
       
-      // Garantir explicitamente que os controles de zoom estão removidos
-      mapRef.current.removeControl(mapRef.current.zoomControl);
-      
       // Adicionar marcadores iniciais
-      if (markers && markers.length > 0) {
-        addMarkersToMap(markers);
+      if (markersRef.current && markersRef.current.length > 0) {
+        addMarkersToMap(mapRef.current, markersRef.current);
       }
       
       // Notificar que o mapa está pronto
-      if (onMapReady) {
+      if (onMapReadyRef.current) {
         const mockMapApi = {
           setCenter: (coords) => mapRef.current.setView([coords.lat, coords.lng], mapRef.current.getZoom()),
           setZoom: (newZoom) => mapRef.current.setZoom(newZoom),
           getZoom: () => mapRef.current.getZoom()
         };
         
-        onMapReady(mockMapApi);
+        onMapReadyRef.current(mockMapApi);
       }
     }
     
@@ -74,7 +157,7 @@ const GoogleMapsView = ({ center, zoom, markers, height, onMapReady }) => {
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [addMarkersToMap]); // Adicionado addMarkersToMap como dependência
 
   // Atualizar centro do mapa quando as coordenadas mudarem
   useEffect(() => {
@@ -90,54 +173,17 @@ const GoogleMapsView = ({ center, zoom, markers, height, onMapReady }) => {
     }
   }, [zoom]);
 
-  // Função para adicionar marcadores ao mapa
-  const addMarkersToMap = (markers) => {
-    // Limpar marcadores existentes
-    if (mapMarkersRef.current.length > 0) {
-      mapMarkersRef.current.forEach(marker => {
-        if (mapRef.current) marker.removeFrom(mapRef.current);
-      });
-      mapMarkersRef.current = [];
-    }
-    
-    // Criar layer group para os marcadores (melhor desempenho)
-    const markersGroup = L.layerGroup();
-    
-    // Adicionar novos marcadores
-    if (mapRef.current) {
-      markers.forEach(markerData => {
-        const marker = L.marker(markerData.position);
-        
-        // Se houver conteúdo, adicionar um popup
-        if (markerData.content) {
-          marker.bindPopup(markerData.content);
-        }
-        
-        // Adicionar evento de clique
-        if (markerData.onClick) {
-          marker.on('click', markerData.onClick);
-        }
-        
-        markersGroup.addLayer(marker);
-        mapMarkersRef.current.push(marker);
-      });
-      
-      // Adicionar o grupo de marcadores ao mapa de uma vez só (mais eficiente)
-      markersGroup.addTo(mapRef.current);
-    }
-  };
-
   // Atualizar marcadores quando mudarem
   useEffect(() => {
-    if (markers && markers.length > 0) {
+    if (mapRef.current && markers) {
       // Usar setTimeout para evitar atualizações simultâneas
       const timer = setTimeout(() => {
-        addMarkersToMap(markers);
+        addMarkersToMap(mapRef.current, markers);
       }, 100);
       
       return () => clearTimeout(timer);
     }
-  }, [markers]);
+  }, [markers, addMarkersToMap]); // Adicionado addMarkersToMap como dependência
 
   return (
     <Box
