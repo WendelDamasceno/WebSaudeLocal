@@ -1,0 +1,168 @@
+/* Estilos personalizados para Leaflet */
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f9fa;
+}
+
+/* Estilo personalizado para o marcador do usuário */
+.user-location-marker {
+  position: relative;
+  z-index: 1000; /* Garantir que fique no topo de outros marcadores */
+}
+
+.user-location-marker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(25, 118, 210, 0.3);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Estilizar os popups */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.15);
+}
+
+.leaflet-popup-content {
+  margin: 8px 12px;
+  line-height: 1.5;
+}
+
+.leaflet-popup-tip {
+  box-shadow: 0 3px 14px rgba(0,0,0,0.15);
+}
+
+/* Esconder os atributos por padrão */
+.leaflet-control-attribution {
+  font-size: 9px;
+  opacity: 0.5;
+  padding: 2px 4px;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Esconder completamente os controles de zoom padrão do Leaflet */
+.leaflet-control-zoom {
+  display: none !important;
+}
+
+/* Personalização específica de popups para usuário */
+.user-location-popup .leaflet-popup-content-wrapper {
+  background-color: rgba(25, 118, 210, 0.95);
+  color: white;
+}
+
+.user-location-popup .leaflet-popup-tip {
+  background-color: rgba(25, 118, 210, 0.95);
+}
+
+/* Melhorar a aparência das camadas de tiles */
+.map-tiles {
+  filter: saturate(1.05) contrast(1.05);
+}
+
+/* Personalização de marcadores de estabelecimentos */
+.hospital-marker,
+.clinic-marker,
+.pharmacy-marker {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.hospital-marker {
+  background-color: rgba(211, 47, 47, 0.9);
+}
+
+.clinic-marker {
+  background-color: rgba(25, 118, 210, 0.9);
+}
+
+.pharmacy-marker {
+  background-color: rgba(76, 175, 80, 0.9);
+}
+
+/* Personalização para marcadores de resultado de busca */
+.search-result-marker {
+  z-index: 1001 !important;
+  filter: drop-shadow(0 0 6px rgba(25, 118, 210, 0.6));
+}
+
+/* Animação de pulso para resultados de busca */
+@keyframes search-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.search-result-marker::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 50%;
+  border: 2px solid #1976d2;
+  animation: search-pulse 1.5s infinite;
+}
+
+/* Estilo para a lista de resultados de busca */
+.search-results-dropdown {
+  max-height: 350px;
+  overflow-y: auto;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  margin-top: 4px;
+  background-color: white;
+  max-width: 360px !important;
+  width: 100% !important;
+}
+
+/* Definir estilo específico para o container da barra de busca */
+.search-container {
+  max-width: 360px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.search-result-item {
+  transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+  background-color: rgba(25, 118, 210, 0.08);
+}

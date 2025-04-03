@@ -47,7 +47,7 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { label: 'Home', icon: HomeIcon, path: '/' },
+    { label: 'Home', icon: HomeIcon, path: '/home' },
     { label: 'Consultas', icon: CalendarIcon, path: '/appointments' },
     { label: 'Médicos', icon: HospitalIcon, path: '/telemedicine' },
     { label: 'Perfil', icon: PersonIcon, path: '/profile' }

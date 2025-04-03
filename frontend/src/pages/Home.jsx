@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import 'leaflet/dist/leaflet.css';
 import { 
   Box, 
   Typography, 
@@ -45,14 +46,32 @@ import {
   LocalHospital as HospitalIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import GoogleMapsView from '../components/GoogleMapsView';
-import { loadGoogleMapsAPI, reverseGeocode, calculateDistance } from '../utils/GeolocationService';
+import { reverseGeocode, calculateDistance } from '../utils/GeolocationService';
+import L from 'leaflet';
 
-const ICON_URLS = {
-  hospital: 'https://cdn-icons-png.flaticon.com/512/4320/4320371.png',
-  clinic: 'https://cdn-icons-png.flaticon.com/512/3209/3209071.png',
-  pharmacy: 'https://cdn-icons-png.flaticon.com/512/1021/1021226.png',
-  user: 'https://cdn-icons-png.flaticon.com/512/3710/3710297.png'
+// Corrigindo o problema dos ícones do Leaflet
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
+
+// Hook personalizado para debounce
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 };
 
 const SearchInput = styled('div')(({ theme, bgColor = 'white' }) => ({
@@ -60,7 +79,9 @@ const SearchInput = styled('div')(({ theme, bgColor = 'white' }) => ({
   width: '100%',
   height: 48,
   borderRadius: 12,
-  overflow: 'hidden'
+  overflow: 'hidden',
+  transition: 'box-shadow 0.2s ease-in-out',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
 }));
 
 const SearchIconWrapper = styled('div')({
@@ -107,42 +128,61 @@ const SearchBar = ({ onSearch, loading, searchResults, onSelectResult }) => {
   const [showResults, setShowResults] = useState(false);
   const anchorRef = useRef(null);
   
+  // Adicione debounce para o input de busca com 300ms de delay
+  const debouncedSearchTerm = useDebounce(searchInput, 300);
+  
+  // Use o termo com debounce para fazer a busca
+  useEffect(() => {
+    if (debouncedSearchTerm.length > 2) {
+      onSearch(debouncedSearchTerm);
+      setShowResults(true);
+    }
+  }, [debouncedSearchTerm, onSearch]);
+
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchInput(value);
     
-    if (value.length > 2) {
-      onSearch(value);
-      setShowResults(true);
-    } else {
+    // Não chama mais diretamente onSearch aqui
+    if (value.length <= 2) {
       setShowResults(false);
     }
   };
-  
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && searchInput.trim()) {
       onSearch(searchInput, true);
     }
   };
-  
+
   const handleSelectResult = (result) => {
     onSelectResult(result);
     setSearchInput(result.display_name.split(',')[0]);
     setShowResults(false);
   };
-  
+
   const handleClear = () => {
     setSearchInput('');
     setShowResults(false);
   };
-  
+
   const handleClickAway = () => {
     setShowResults(false);
   };
-  
+
   return (
-    <Box sx={{ position: 'relative', width: '100%' }} ref={anchorRef}>
-      <SearchInput>
+    <Box sx={{ 
+      position: 'relative', 
+      width: '100%',
+      maxWidth: '360px', // Limitando a largura máxima
+      mx: 'auto' // Centraliza horizontalmente
+    }} ref={anchorRef}>
+      <SearchInput sx={{ 
+        boxShadow: showResults ? '0 4px 12px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.12)',
+        width: '100%',
+        transition: 'all 0.2s ease-in-out',
+        backgroundColor: 'white'
+      }}>
         <SearchIconWrapper>
           <SearchIcon />
         </SearchIconWrapper>
@@ -169,22 +209,40 @@ const SearchBar = ({ onSearch, loading, searchResults, onSelectResult }) => {
         anchorEl={anchorRef.current}
         placement="bottom-start"
         transition
-        style={{ zIndex: 1500, width: '100%' }}
+        style={{ 
+          zIndex: 1500, 
+          width: '100%',
+          maxWidth: '360px', // Garante que o dropdown tenha a mesma largura
+          position: 'absolute',
+          boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
+          marginTop: '2px'
+        }}
+        modifiers={{
+          offset: {
+            enabled: true,
+            offset: '0, 8'
+          },
+          preventOverflow: {
+            enabled: true,
+            boundariesElement: 'viewport'
+          }
+        }}
       >
         {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
+          <Fade {...TransitionProps} timeout={200}>
             <Paper 
-              elevation={3}
+              elevation={4}
               sx={{ 
                 mt: 0.5, 
-                maxHeight: 300, 
+                maxHeight: 350, 
                 overflow: 'auto',
                 width: '100%',
-                borderRadius: 2
+                borderRadius: 2,
+                border: '1px solid rgba(0,0,0,0.08)'
               }}
             >
               <ClickAwayListener onClickAway={handleClickAway}>
-                <List dense>
+                <List dense sx={{ p: 0 }}>
                   {loading ? (
                     <ListItem>
                       <Box sx={{ display: 'flex', alignItems: 'center', px: 2, py: 1 }}>
@@ -192,14 +250,15 @@ const SearchBar = ({ onSearch, loading, searchResults, onSelectResult }) => {
                         <Typography>Buscando...</Typography>
                       </Box>
                     </ListItem>
-                  ) : (
+                  ) : searchResults.length > 0 ? (
                     searchResults.map((result, index) => (
                       <ListItem 
-                        key={`${result.place_id}-${index}`} 
+                        key={`${result.place_id || result.osm_id || index}`} 
                         button 
                         onClick={() => handleSelectResult(result)}
                         sx={{ 
                           py: 1.5,
+                          borderBottom: index < searchResults.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
                           '&:hover': { backgroundColor: 'rgba(0,0,0,0.04)' }
                         }}
                       >
@@ -212,9 +271,16 @@ const SearchBar = ({ onSearch, loading, searchResults, onSelectResult }) => {
                           primary={result.display_name.split(',')[0]} 
                           secondary={result.display_name.split(',').slice(1, 3).join(',')} 
                           primaryTypographyProps={{ fontWeight: 'medium' }}
+                          secondaryTypographyProps={{ noWrap: true }}
                         />
                       </ListItem>
                     ))
+                  ) : (
+                    <ListItem>
+                      <Box sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2 }}>
+                        <Typography color="text.secondary">Nenhum resultado encontrado</Typography>
+                      </Box>
+                    </ListItem>
                   )}
                 </List>
               </ClickAwayListener>
@@ -255,21 +321,16 @@ const Home = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [nearbyEmergencyFacilities, setNearbyEmergencyFacilities] = useState([]);
-  const [mapLoading, setMapLoading] = useState(true);
-  const mapRef = useRef(null);
-  
   const [location, setLocation] = useState(null);
   const [locationStatus, setLocationStatus] = useState('idle');
   const [locationError, setLocationError] = useState(null);
   const [currentAddress, setCurrentAddress] = useState(null);
-  const [mapZoom, setMapZoom] = useState(15);
-  
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
-  
-  const [healthFacilities, setHealthFacilities] = useState([]);
-  
   const [bottomNavValue, setBottomNavValue] = useState(0);
+  const [mapInstance, setMapInstance] = useState(null);
+  const mapContainerRef = useRef(null);
+  const markersLayerGroup = useRef(null);
   
   const navigate = useNavigate();
   
@@ -443,21 +504,7 @@ const Home = () => {
           accuracy: accuracy
         });
         setLocationStatus('success');
-        
-        if (window.google && window.google.maps) {
-          const geocoder = new window.google.maps.Geocoder();
-          const latlng = { lat: latitude, lng: longitude };
-          
-          geocoder.geocode({ location: latlng }, (results, status) => {
-            if (status === 'OK' && results && results.length > 0) {
-              setCurrentAddress(results[0].formatted_address);
-            } else {
-              fetchAddressFromCoordinates(latitude, longitude);
-            }
-          });
-        } else {
-          fetchAddressFromCoordinates(latitude, longitude);
-        }
+        fetchAddressFromCoordinates(latitude, longitude);
       },
       (error) => {
         setLocationStatus('error');
@@ -493,8 +540,43 @@ const Home = () => {
     getLocation();
   };
   
+  const handleSelectSearchResult = useCallback((result) => {
+    const newLocation = {
+      lat: parseFloat(result.lat),
+      lng: parseFloat(result.lon),
+    };
+  
+    if (mapInstance) {
+      mapInstance.setView([newLocation.lat, newLocation.lng], 15, { animate: true });
+  
+      const marker = L.marker([newLocation.lat, newLocation.lng], {
+        title: result.display_name,
+        icon: L.divIcon({
+          className: 'search-result-marker',
+          html: `<div style="background-color: #1976d2; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center;">
+                   <span style="color: white; font-size: 14px;">H</span>
+                 </div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
+        }),
+      }).addTo(mapInstance);
+  
+      marker.bindPopup(`
+        <div>
+          <strong>${result.display_name.split(',')[0]}</strong>
+          <p>${result.display_name.split(',').slice(1).join(', ')}</p>
+        </div>
+      `).openPopup();
+  
+      if (markersLayerGroup.current) {
+        markersLayerGroup.current.clearLayers();
+      }
+      markersLayerGroup.current = L.layerGroup([marker]).addTo(mapInstance);
+    }
+  }, [mapInstance]);
+
   useEffect(() => {
-    if (window.google && window.google.maps && mapRef.current && location) {
+    if (location) {
       reverseGeocode(
         location.lat,
         location.lng,
@@ -509,284 +591,151 @@ const Home = () => {
     }
   }, [location, fetchAddressFromCoordinates]);
 
-  const searchPlaces = async (query, executeSearch = false) => {
-    if ((!executeSearch && query.length < 3) || !query.trim()) return;
+  const searchCache = useRef({});
+
+  const searchPlaces = useCallback(async (query, executeSearch = false) => {
+    if ((!executeSearch && query.length < 2) || !query.trim() || !location) return;
+    
+    // Verificar se já temos resultados em cache para esta consulta
+    const cacheKey = `${query}-${location.lat.toFixed(2)}-${location.lng.toFixed(2)}`;
+    if (searchCache.current[cacheKey] && !executeSearch) {
+      setSearchResults(searchCache.current[cacheKey]);
+      return;
+    }
     
     setSearchLoading(true);
     
-    const setSearchQuery = (q) => {
-      console.log("Search query:", q);
-    };
-    
-    setSearchQuery(query);
-    
     try {
-      if (window.google && window.google.maps) {
-        const placesService = new window.google.maps.places.PlacesService(document.createElement('div'));
-        
-        const request = {
-          query: query,
-          fields: ['name', 'geometry', 'formatted_address'],
-        };
-        
-        placesService.findPlaceFromQuery(request, (results, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-            const formattedResults = results.map(place => ({
-              place_id: place.place_id,
-              display_name: place.name,
-              lat: place.geometry.location.lat(),
-              lon: place.geometry.location.lng(),
-              address: place.formatted_address || '',
-            }));
-            
-            setSearchResults(formattedResults);
-            
-            if (executeSearch && formattedResults.length > 0) {
-              const result = formattedResults[0];
-              handleSelectSearchResult(result);
-            }
-            
-            setSearchLoading(false);
-          } else {
-            fallbackToNominatim();
-          }
-        });
-      } else {
-        fallbackToNominatim();
-      }
-    } catch (error) {
-      console.error('Erro na busca de lugares:', error);
-      fallbackToNominatim();
-    }
-    
-    async function fallbackToNominatim() {
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
-        );
-        
-        if (!response.ok) {
-          throw new Error('Falha ao buscar lugares');
-        }
-        
-        const data = await response.json();
-        setSearchResults(data);
-        
-        if (executeSearch && data.length > 0) {
-          const result = data[0];
-          handleSelectSearchResult(result);
-        }
-      } catch (err) {
-        console.error('Erro no fallback para Nominatim:', err);
-      } finally {
-        setSearchLoading(false);
-      }
-    }
-  };
-
-  const fetchNearbyHealthFacilities = async (lat, lng, radius = 5000) => {
-    try {
-      const overpassApi = `https://overpass-api.de/api/interpreter`;
-      const query = `
-        [out:json];
-        (
-          node["amenity"="hospital"](around:${radius},${lat},${lng});
-          node["amenity"="clinic"](around:${radius},${lat},${lng});
-          node["amenity"="doctors"](around:${radius},${lat},${lng});
-          node["amenity"="pharmacy"](around:${radius},${lat},${lng});
-        );
-        out body;
-      `;
+      // Definir a área de busca com base na localização atual
+      const boundingBoxSize = 0.1;
+      const viewbox = [
+        location.lng - boundingBoxSize,
+        location.lat - boundingBoxSize,
+        location.lng + boundingBoxSize,
+        location.lat + boundingBoxSize,
+      ].join(',');
       
-      const response = await fetch(overpassApi, {
-        method: 'POST',
-        body: query
-      });
+      // Adicionar parâmetro de prioridade (Priority for hospitals)
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=10&viewbox=${viewbox}&bounded=1&dedupe=1&countrycodes=br`
+      );
       
       if (!response.ok) {
-        throw new Error('Falha ao buscar estabelecimentos de saúde próximos');
+        throw new Error('Falha ao buscar lugares');
       }
       
       const data = await response.json();
       
-      const facilities = data.elements.map(element => {
-        const { id, lat, lon, tags } = element;
-        const type = tags.amenity;
-        let icon;
-        
-        switch (type) {
-          case 'hospital':
-            icon = ICON_URLS.hospital;
-            break;
-          case 'clinic':
-          case 'doctors':
-            icon = ICON_URLS.clinic;
-            break;
-          case 'pharmacy':
-            icon = ICON_URLS.pharmacy;
-            break;
-          default:
-            icon = null;
-        }
-        
-        return {
-          id,
-          position: [lat, lon],
-          name: tags.name || `${type.charAt(0).toUpperCase() + type.slice(1)}`,
-          type,
-          icon,
-          address: tags['addr:street'] ? `${tags['addr:street']} ${tags['addr:housenumber'] || ''}` : 'Endereço não disponível',
-          phone: tags.phone || 'Telefone não disponível',
-          website: tags.website || null,
-          wheelchair: tags.wheelchair === 'yes',
-          opening_hours: tags.opening_hours || 'Horário não disponível',
-          emergency: tags.emergency === 'yes',
-          ratings: {
-            stars: Math.random() * 2 + 3,
-            count: Math.floor(Math.random() * 500)
-          }
-        };
-      });
+      // Filtrar e classificar resultados por relevância
+      const filteredResults = data
+        .filter((result) => {
+          const tags = result.extratags || {};
+          const category = result.type || '';
+          const name = result.display_name.toLowerCase();
+          return (
+            tags.amenity === 'hospital' ||
+            tags.amenity === 'clinic' ||
+            tags.amenity === 'doctors' ||
+            category.includes('hospital') ||
+            category.includes('clinic') ||
+            name.includes('hospital') ||
+            name.includes('clínic') ||
+            name.includes('saúde') ||
+            name.includes('médic')
+          );
+        })
+        .sort((a, b) => {
+          // Priorizar hospitais e lugares com nomes mais curtos (geralmente mais relevantes)
+          const aIsHospital = a.display_name.toLowerCase().includes('hospital');
+          const bIsHospital = b.display_name.toLowerCase().includes('hospital');
+          
+          if (aIsHospital && !bIsHospital) return -1;
+          if (!aIsHospital && bIsHospital) return 1;
+          
+          return a.display_name.length - b.display_name.length;
+        });
       
-      setHealthFacilities(facilities);
-    } catch (error) {
-      console.error('Erro ao buscar estabelecimentos de saúde:', error);
-    }
-  };
-  
-  const handleSelectSearchResult = (result) => {
-    const newLocation = { 
-      lat: parseFloat(result.lat), 
-      lng: parseFloat(result.lon) 
-    };
-    
-    if (mapRef.current) {
-      mapRef.current.setCenter(newLocation);
-      mapRef.current.setZoom(15);
-      setMapZoom(15);
-    }
-    
-    fetchNearbyHealthFacilities(newLocation.lat, newLocation.lng);
-  };
-  
-  const handleSelectFacility = (facility) => {
-    if (mapRef.current) {
-      mapRef.current.setCenter({ lat: facility.position[0], lng: facility.position[1] });
-      mapRef.current.setZoom(16);
-    }
-  };
-  
-  const navigateToFacilityDetails = (facilityId) => {
-    navigate(`/facility/${facilityId}`);
-  };
-
-  const handleZoomIn = () => {
-    if (mapRef.current) {
-      const newZoom = mapRef.current.getZoom() + 1;
-      mapRef.current.setZoom(newZoom);
-      setMapZoom(newZoom);
-    }
-  };
-  
-  const handleZoomOut = () => {
-    if (mapRef.current) {
-      const newZoom = mapRef.current.getZoom() - 1;
-      mapRef.current.setZoom(newZoom);
-      setMapZoom(newZoom);
-    }
-  };
-  
-  const handleCenterMap = () => {
-    if (mapRef.current && location) {
-      mapRef.current.setCenter({ lat: location.lat, lng: location.lng });
-      mapRef.current.setZoom(15);
-      setMapZoom(15);
-    }
-  };
-  
-  const prepareMapMarkers = () => {
-    const markers = [];
-    
-    if (location) {
-      markers.push({
-        position: [location.lat, location.lng],
-        icon: ICON_URLS.user,
-        title: 'Sua localização',
-        content: `
-          <div>
-            <strong>Sua localização atual</strong>
-            <p>${currentAddress || ''}</p>
-          </div>
-        `
-      });
-    }
-    
-    healthFacilities.forEach(facility => {
-      let iconUrl;
+      // Armazenar em cache
+      searchCache.current[cacheKey] = filteredResults;
+      setSearchResults(filteredResults);
       
-      switch (facility.type) {
-        case 'hospital':
-          iconUrl = ICON_URLS.hospital;
-          break;
-        case 'clinic':
-        case 'doctors':
-          iconUrl = ICON_URLS.clinic;
-          break;
-        case 'pharmacy':
-          iconUrl = ICON_URLS.pharmacy;
-          break;
-        default:
-          iconUrl = null;
+      if (executeSearch && filteredResults.length > 0) {
+        const result = filteredResults[0];
+        handleSelectSearchResult(result);
       }
-      
-      markers.push({
-        position: facility.position,
-        icon: iconUrl,
-        title: facility.name,
-        content: `
-          <div style="min-width: 200px; max-width: 300px;">
-            <h4 style="margin: 0 0 8px 0;">${facility.name}</h4>
-            <p style="margin: 0 0 5px 0;"><strong>Tipo:</strong> ${facility.type.charAt(0).toUpperCase() + facility.type.slice(1)}</p>
-            <p style="margin: 0 0 5px 0;"><strong>Endereço:</strong> ${facility.address}</p>
-            <p style="margin: 0 0 5px 0;"><strong>Telefone:</strong> ${facility.phone}</p>
-          </div>
-        `,
-        onClick: () => handleSelectFacility(facility)
-      });
-    });
+    } catch (err) {
+      console.error('Erro na busca de lugares:', err);
+    } finally {
+      setSearchLoading(false);
+    }
+  }, [location, handleSelectSearchResult]);
+
+  // Limpar o cache quando a localização mudar significativamente
+  useEffect(() => {
+    searchCache.current = {};
+  }, [location?.lat, location?.lng]);
+
+  const initializeMap = useCallback(() => {
+    if (!mapContainerRef.current || mapInstance) return;
     
-    return markers;
-  };
+    const map = L.map(mapContainerRef.current, {
+      zoomControl: false
+    }).setView(
+      location ? [location.lat, location.lng] : [-23.55052, -46.633308],
+      15
+    );
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    markersLayerGroup.current = L.layerGroup().addTo(map);
+    
+    setMapInstance(map);
+  }, [location, mapInstance]);
 
   useEffect(() => {
-    loadGoogleMapsAPI(
-      () => {
-        console.log('Google Maps API carregada com sucesso na Home');
-        getLocation();
-      },
-      (error) => {
-        console.error('Erro ao carregar Google Maps API:', error);
-        setLocationStatus('error');
-        setLocationError('Não foi possível carregar o serviço de localização. Tente novamente mais tarde.');
-        setLocation({ lat: -23.5505, lng: -46.6333 }); // Coordenadas padrão
-      }
-    );
+    if (mapInstance && location) {
+      mapInstance.setView([location.lat, location.lng], 15, { animate: true, duration: 0.5 });
+      
+      const userMarker = L.marker([location.lat, location.lng], {
+        icon: L.divIcon({
+          className: 'user-location-marker',
+          html: `<div style="background-color: #1976d2; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.3);"></div>`,
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
+        })
+      }).addTo(mapInstance);
+      
+      const popupContent = `
+        <div>
+          <strong>Sua localização atual</strong>
+          ${currentAddress ? `<p>${currentAddress}</p>` : ''}
+        </div>
+      `;
+      
+      userMarker.bindPopup(popupContent, {
+        offset: [0, -8],
+        closeButton: false,
+        className: 'user-location-popup'
+      });
+      
+      return () => {
+        mapInstance.removeLayer(userMarker);
+      };
+    }
+  }, [mapInstance, location, currentAddress]);
+
+  useEffect(() => {
+    if (location && !mapInstance) {
+      initializeMap();
+    }
+  }, [location, mapInstance, initializeMap]);
+
+  useEffect(() => {
+    getLocation();
   }, [getLocation]);
   
-  useEffect(() => {
-    if (location && locationStatus === 'success') {
-      fetchNearbyHealthFacilities(location.lat, location.lng);
-    }
-  }, [location, locationStatus]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMapLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <Box sx={{ 
       display: 'flex',
@@ -807,7 +756,10 @@ const Home = () => {
         justifyContent: 'space-between',
         p: 2, 
         pb: 1,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        position: 'relative',
+        zIndex: 2000,
+        boxShadow: '0px 2px 4px rgba(0,0,0,0.05)'
       }}>
         <Tooltip title="Emergência">
           <IconButton 
@@ -877,18 +829,19 @@ const Home = () => {
         flex: 1, 
         display: 'flex', 
         flexDirection: 'column',
-        position: 'relative'
+        position: 'relative',
+        height: 'calc(100vh - 120px)'
       }}>
         <Box sx={{ 
           position: 'absolute',
           top: 10,
-          left: 10,
-          right: 10,
-          zIndex: 1000,
-          backgroundColor: 'white',
-          borderRadius: 2,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-          overflow: 'hidden',
+          left: 0,
+          right: 0,
+          zIndex: 2100,
+          display: 'flex',
+          justifyContent: 'center', // Centraliza horizontalmente
+          alignItems: 'center',
+          padding: '0 10px', // Adiciona padding horizontal
         }}>
           <SearchBar 
             onSearch={searchPlaces}
@@ -899,11 +852,15 @@ const Home = () => {
         </Box>
 
         <Box sx={{ 
-          flex: 1, 
-          width: '100%', 
-          position: 'relative'
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          zIndex: 900
         }}>
-          {mapLoading && (
+          {locationStatus === 'loading' && (
             <Box sx={{
               position: 'absolute',
               top: 0,
@@ -914,25 +871,49 @@ const Home = () => {
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: 'rgba(255,255,255,0.7)',
-              zIndex: 900
+              zIndex: 1000
             }}>
               <CircularProgress />
             </Box>
           )}
-          
-          {location && (
-            <GoogleMapsView
-              center={[location.lat, location.lng]}
-              zoom={mapZoom}
-              markers={prepareMapMarkers()}
-              height="calc(100vh - 170px)"
-              onMapReady={(googleMap) => {
-                mapRef.current = googleMap;
-                setMapLoading(false);
-              }}
-              showTraffic={true}
-            />
+
+          {locationStatus === 'error' && !location && (
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              padding: 3,
+              textAlign: 'center'
+            }}>
+              <LocationIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                Localização não disponível
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Não foi possível carregar o mapa. Permita o acesso à sua localização para visualizar os serviços de saúde próximos.
+              </Typography>
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={handleRefreshLocation}
+                startIcon={<MyLocationIcon />}
+              >
+                Tentar novamente
+              </Button>
+            </Box>
           )}
+
+          <Box 
+            ref={mapContainerRef} 
+            id="map"
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: locationStatus !== 'error' || location ? 'block' : 'none'
+            }}
+          />
 
           <Box sx={{ 
             position: 'absolute', 
@@ -941,18 +922,18 @@ const Home = () => {
             display: 'flex', 
             flexDirection: 'column', 
             gap: 1,
-            zIndex: 800
+            zIndex: 1500
           }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
               <MapButton 
                 sx={{ borderRadius: '12px 12px 0 0' }}
-                onClick={handleZoomIn}
+                onClick={() => mapInstance && mapInstance.setZoom(mapInstance.getZoom() + 1)}
               >
                 <AddIcon />
               </MapButton>
               <MapButton 
                 sx={{ borderRadius: '0 0 12px 12px' }}
-                onClick={handleZoomOut}
+                onClick={() => mapInstance && mapInstance.setZoom(mapInstance.getZoom() - 1)}
               >
                 <RemoveIcon />
               </MapButton>
@@ -966,7 +947,13 @@ const Home = () => {
                     backgroundColor: locationStatus === 'success' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 255, 255, 0.9)',
                   }
                 }}
-                onClick={locationStatus === 'success' ? handleCenterMap : handleRefreshLocation}
+                onClick={() => {
+                  if (locationStatus === 'success' && location && mapInstance) {
+                    mapInstance.setView([location.lat, location.lng], 15);
+                  } else {
+                    handleRefreshLocation();
+                  }
+                }}
                 disabled={locationStatus === 'loading'}
               >
                 {locationStatus === 'loading' ? (
@@ -980,48 +967,6 @@ const Home = () => {
                 )}
               </MapButton>
             </Tooltip>
-          </Box>
-
-          <Box sx={{
-            position: 'absolute',
-            bottom: 15,
-            left: 15,
-            zIndex: 800,
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            borderRadius: 2,
-            padding: locationStatus === 'loading' ? '6px 12px' : '6px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}>
-            {locationStatus === 'loading' && (
-              <>
-                <CircularProgress size={16} sx={{ mr: 1 }} />
-                <Typography variant="caption">Obtendo localização...</Typography>
-              </>
-            )}
-            {locationStatus === 'success' && location && (
-              <Box sx={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: 'success.main',
-                animation: 'pulse 2s infinite',
-                '@keyframes pulse': {
-                  '0%': { boxShadow: '0 0 0 0 rgba(76, 175, 80, 0.7)' },
-                  '70%': { boxShadow: '0 0 0 6px rgba(76, 175, 80, 0)' },
-                  '100%': { boxShadow: '0 0 0 0 rgba(76, 175, 80, 0)' }
-                }
-              }}/>
-            )}
-            {locationStatus === 'error' && (
-              <Box sx={{
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: 'error.main'
-              }}/>
-            )}
           </Box>
         </Box>
       </Box>
@@ -1042,7 +987,7 @@ const Home = () => {
           margin: '0 auto',
           height: '56px',
           boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.05)',
-          zIndex: 1000
+          zIndex: 2000
         }}
       >
         <BottomNavigationAction 
@@ -1202,15 +1147,6 @@ const Home = () => {
                       }
                       sx={{ pr: 2 }}
                     />
-                    <Button 
-                      variant="contained"
-                      size="small"
-                      fullWidth
-                      onClick={() => navigateToFacilityDetails(facility.id)}
-                      sx={{ mt: 1 }}
-                    >
-                      Ver Detalhes
-                    </Button>
                   </ListItem>
                 )) : (
                   <Box sx={{ textAlign: 'center', py: 3 }}>
