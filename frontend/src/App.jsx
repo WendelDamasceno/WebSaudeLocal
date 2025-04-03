@@ -19,7 +19,8 @@ import More from './pages/More'; // Importação da nova página Mais
 import theme from './styles/theme';
 import { loadGoogleMapsAPI } from './utils/GeolocationService';
 
-function App() {
+// Certifique-se de que o componente está atribuído a uma variável
+const App = () => {
   // Carregando a API do Google Maps no início da aplicação
   useEffect(() => {
     const loadGoogleAPI = async () => {
@@ -64,6 +65,7 @@ function App() {
       </Router>
     </ThemeProvider>
   );
-}
+};
 
+// Exportar o componente atribuído
 export default App;
