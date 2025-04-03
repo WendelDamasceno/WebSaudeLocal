@@ -11,7 +11,6 @@ import NotFound from './pages/NotFound';
 import ForgotPassword from './pages/ForgotPassword';
 import FacilityDetailsDynamic from './pages/FacilityDetailsDynamic';
 import UserProfile from './pages/UserProfile';
-import Settings from './pages/Settings';
 import Community from './pages/Community';
 import Favorites from './pages/Favorites';
 import More from './pages/More'; // Importação da nova página Mais
@@ -52,7 +51,6 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/facility/:id" element={<FacilityDetailsDynamic />} />
           <Route path="/profile" element={<UserProfile />} />
-          <Route path="/settings" element={<Settings />} />
           <Route path="/community" element={<Community />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/more" element={<More />} /> {/* Nova rota para a página Mais */}

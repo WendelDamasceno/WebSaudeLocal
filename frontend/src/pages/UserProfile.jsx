@@ -16,11 +16,12 @@ import {
   CardContent,
   Grid,
   Badge,
-  CircularProgress
+  CircularProgress,
+  AppBar,
+  Toolbar
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Settings as SettingsIcon,
   Edit as EditIcon,
   Lock as LockIcon,
   Bookmark as BookmarkIcon,
@@ -28,8 +29,8 @@ import {
   Star as StarIcon,
   Diamond as DiamondIcon,
   ArrowForwardIos as ArrowForwardIcon,
-  Home as HomeIcon,
-  CalendarToday as CalendarIcon
+  CalendarToday as CalendarIcon,
+  ArrowBack as ArrowBackIcon
 } from '@mui/icons-material';
 
 const UserProfile = () => {
@@ -67,10 +68,6 @@ const UserProfile = () => {
     fetchUserData();
   }, []);
 
-  const handleSettingsClick = () => {
-    navigate('/settings');
-  };
-
   const handleEditProfile = () => {
     navigate('/edit-profile');
   };
@@ -96,40 +93,33 @@ const UserProfile = () => {
         fontFamily: '"Plus Jakarta Sans", "Noto Sans", sans-serif'
       }}
     >
-      {/* Cabeçalho */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        p: 2, 
-        pb: 1.5,
-        backgroundColor: 'white',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-      }}>
-        <IconButton 
-          onClick={() => navigate('/home')}
-        >
-          <HomeIcon />
-        </IconButton>
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            fontSize: '1.125rem',
-            fontWeight: 'bold',
-            flex: 1,
-            textAlign: 'center',
-            color: '#111518'
-          }}
-        >
-          Meu Perfil
-        </Typography>
-        <IconButton onClick={handleSettingsClick}>
-          <SettingsIcon sx={{ color: '#111518' }} />
-        </IconButton>
-      </Box>
+      <AppBar 
+        position="fixed"
+        color="default"
+        elevation={0}
+        sx={{ 
+          maxWidth: '480px', 
+          margin: '0 auto',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          right: 'auto',
+          width: '100%',
+          borderBottom: '1px solid',
+          borderColor: 'divider' 
+        }}
+      >
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={() => navigate(-1)}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+            Meu Perfil
+          </Typography>
+        </Toolbar>
+      </AppBar>
 
       {/* Perfil do usuário */}
-      <Box sx={{ p: 3, backgroundColor: 'white' }}>
+      <Box sx={{ p: 3, backgroundColor: 'white', mt: 8 }}>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
             <CircularProgress />
@@ -313,23 +303,6 @@ const UserProfile = () => {
               <StarIcon color="primary" />
             </ListItemIcon>
             <ListItemText primary="Minhas Avaliações" />
-            <ListItemSecondaryAction>
-              <IconButton edge="end">
-                <ArrowForwardIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-          
-          <Divider variant="inset" />
-          
-          <ListItem 
-            button
-            onClick={handleSettingsClick}
-          >
-            <ListItemIcon>
-              <SettingsIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary="Configurações" />
             <ListItemSecondaryAction>
               <IconButton edge="end">
                 <ArrowForwardIcon />

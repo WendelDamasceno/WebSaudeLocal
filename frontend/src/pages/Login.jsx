@@ -17,10 +17,10 @@ import {
   Email as EmailIcon,
   Lock as LockIcon,
   Google as GoogleIcon,
-  ArrowForward as ArrowForwardIcon,
-  LocalHospital as HealthIcon // Adicionando ícone para usar como logo
+  ArrowForward as ArrowForwardIcon
 } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/images/logo.png';
 
 // Componentes estilizados
 const StyledInput = styled(TextField)(({ theme }) => ({
@@ -99,20 +99,12 @@ const Login = () => {
         pb: 4,
       }}>
         {/* Substituindo a imagem por um ícone */}
-        <Box 
-          sx={{ 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 120,
-            height: 120,
-            backgroundColor: '#1976d2',
-            borderRadius: '50%',
-            mb: 2,
-            boxShadow: '0 8px 16px rgba(25, 118, 210, 0.2)'
-          }}
-        >
-          <HealthIcon sx={{ fontSize: 64, color: 'white' }} />
+        <Box className="MuiBox-root css-u9uudn">
+          <img
+            alt="Logo"
+            src={logo}
+            style={{ maxWidth: '200px' }}
+          />
         </Box>
         
         <Typography 

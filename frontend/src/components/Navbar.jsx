@@ -88,7 +88,6 @@ const Navbar = () => {
             <MenuItem disabled>{user?.email}</MenuItem>
             <Divider />
             <MenuItem component={Link} to="/profile">Perfil</MenuItem>
-            <MenuItem component={Link} to="/settings">Configurações</MenuItem>
             <Divider />
             <MenuItem onClick={handleLogout}>Sair</MenuItem>
           </Menu>
