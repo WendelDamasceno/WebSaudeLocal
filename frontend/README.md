@@ -38,11 +38,3 @@ Para iniciar o servidor de desenvolvimento, execute:
 npm start
 ```
 Isso iniciará a aplicação em seu navegador web padrão.
-
-## Contribuindo
-
-Contribuições são bem-vindas! Por favor, abra uma issue ou envie um pull request para quaisquer melhorias ou correções de bugs.
-
-## Licença
-
-Este projeto está licenciado sob a Licença MIT. Consulte o arquivo LICENSE para mais detalhes.
