@@ -102,8 +102,3 @@ health-app
   npm start
   ```
 
-## Contribuindo
-Contribuições são bem-vindas! Por favor, envie um pull request ou abra uma issue para quaisquer sugestões ou melhorias.
-
-## Licença
-Este projeto está licenciado sob a Licença MIT - consulte o arquivo LICENSE para obter detalhes.
