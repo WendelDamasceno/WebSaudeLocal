@@ -1,22 +1,24 @@
-# Health App
+# Saúde Local 
 
-## Overview
-The Health App is a comprehensive application designed to assist users in managing their health-related needs. It provides functionalities for user registration, login, and access to various health services, including hospitals, clinics, and emergency services. The app integrates with external APIs to deliver real-time information and offers features such as telemedicine, medication availability checks, and community support.
+Este projeto foi desenvolvido como parte da disciplina de Empreendedorismo do curso de Ciência da Computação do IFBA.
 
-## Features
-- **User Authentication**: Users can log in, register, or continue without an account for limited access.
-- **Health Condition Tracking**: Users can register with their health conditions, age, name, and email.
-- **API Integration**: Connects to a free API to search for hospitals, clinics, fire departments, and police stations based on user location.
-- **Custom Filters**: Users can filter health units by medical specialty, estimated wait times, and community ratings.
-- **Service Ratings**: Users can rate services based on quality of care, cleanliness, and overall experience.
-- **Emergency Button**: Quick access to call emergency services like ambulances and fire departments.
-- **Medication Availability**: Users can check the availability of essential medications at local pharmacies and health units.
-- **Telemedicine Integration**: Connects users to teleconsultation services for non-urgent cases.
-- **Smart Notifications**: Users receive notifications about new clinics, wait time changes, and vaccination campaigns.
-- **History and Favorites**: Users can save frequently visited locations for quick access.
-- **Community Chat**: A forum for users to share information and experiences regarding health services.
+## Visão Geral
+O Health App é uma aplicação abrangente projetada para auxiliar os usuários no gerenciamento de suas necessidades relacionadas à saúde. Ele fornece funcionalidades para registro de usuários, login e acesso a diversos serviços de saúde, incluindo hospitais, clínicas e serviços de emergência. O aplicativo integra-se com APIs externas para fornecer informações em tempo real e oferece recursos como telemedicina, verificação de disponibilidade de medicamentos e suporte comunitário.
 
-## Project Structure
+## Recursos
+- **Autenticação de Usuário**: Os usuários podem fazer login, registrar-se ou continuar sem uma conta para acesso limitado.
+- **Acompanhamento de Condições de Saúde**: Os usuários podem se registrar com suas condições de saúde, idade, nome e e-mail.
+- **Integração de API**: Conecta-se a uma API gratuita para pesquisar hospitais, clínicas, corpo de bombeiros e delegacias com base na localização do usuário.
+- **Filtros Personalizados**: Os usuários podem filtrar unidades de saúde por especialidade médica, tempos estimados de espera e avaliações da comunidade.
+- **Avaliações de Serviços**: Os usuários podem avaliar serviços com base na qualidade do atendimento, limpeza e experiência geral.
+- **Botão de Emergência**: Acesso rápido para chamar serviços de emergência como ambulâncias e corpo de bombeiros.
+- **Disponibilidade de Medicamentos**: Os usuários podem verificar a disponibilidade de medicamentos essenciais em farmácias locais e unidades de saúde.
+- **Integração com Telemedicina**: Conecta os usuários a serviços de teleconsulta para casos não urgentes.
+- **Notificações Inteligentes**: Os usuários recebem notificações sobre novas clínicas, mudanças no tempo de espera e campanhas de vacinação.
+- **Histórico e Favoritos**: Os usuários podem salvar locais frequentemente visitados para acesso rápido.
+- **Chat Comunitário**: Um fórum para os usuários compartilharem informações e experiências sobre serviços de saúde.
+
+## Estrutura do Projeto
 ```
 health-app
 ├── backend
@@ -47,61 +49,61 @@ health-app
 └── README.md
 ```
 
-## Getting Started
+## Começando
 
-### Prerequisites
+### Pré-requisitos
 - Node.js
 - npm
-- MongoDB (or any other database of your choice)
+- MongoDB (ou qualquer outro banco de dados de sua escolha)
 
-### Installation
+### Instalação
 
-1. Clone the repository:
+1. Clone o repositório:
    ```
-   git clone <repository-url>
+   git clone <url-do-repositório>
    cd health-app
    ```
 
-2. Set up the backend:
-   - Navigate to the `backend` directory:
+2. Configure o backend:
+   - Navegue até o diretório `backend`:
      ```
      cd backend
      ```
-   - Install dependencies:
+   - Instale as dependências:
      ```
      npm install
      ```
-   - Create a `.env` file and configure your environment variables.
+   - Crie um arquivo `.env` e configure suas variáveis de ambiente.
 
-3. Set up the frontend:
-   - Navigate to the `frontend` directory:
+3. Configure o frontend:
+   - Navegue até o diretório `frontend`:
      ```
      cd ../frontend
      ```
-   - Install dependencies:
+   - Instale as dependências:
      ```
      npm install
      ```
 
-4. Set up the database:
-   - Navigate to the `database` directory and follow the instructions in the README.md for migrations and seeders.
+4. Configure o banco de dados:
+   - Navegue até o diretório `database` e siga as instruções no README.md para migrações e seeders.
 
-### Running the Application
+### Executando a Aplicação
 
-- Start the backend server:
+- Inicie o servidor backend:
   ```
   cd backend
   npm start
   ```
 
-- Start the frontend application:
+- Inicie a aplicação frontend:
   ```
   cd frontend
   npm start
   ```
 
-## Contributing
-Contributions are welcome! Please submit a pull request or open an issue for any suggestions or improvements.
+## Contribuindo
+Contribuições são bem-vindas! Por favor, envie um pull request ou abra uma issue para quaisquer sugestões ou melhorias.
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## Licença
+Este projeto está licenciado sob a Licença MIT - consulte o arquivo LICENSE para obter detalhes.
