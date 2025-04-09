@@ -3,7 +3,7 @@
 Este projeto foi desenvolvido como parte da disciplina de Empreendedorismo do curso de Ciência da Computação do IFBA.
 
 ## Visão Geral
-O Health App é uma aplicação abrangente projetada para auxiliar os usuários no gerenciamento de suas necessidades relacionadas à saúde. Ele fornece funcionalidades para registro de usuários, login e acesso a diversos serviços de saúde, incluindo hospitais, clínicas e serviços de emergência. O aplicativo integra-se com APIs externas para fornecer informações em tempo real e oferece recursos como telemedicina, verificação de disponibilidade de medicamentos e suporte comunitário.
+Saúde Local é uma aplicação abrangente projetada para auxiliar os usuários no gerenciamento de suas necessidades relacionadas à saúde. Ele fornece funcionalidades para registro de usuários, login e acesso a diversos serviços de saúde, incluindo hospitais, clínicas e serviços de emergência. O aplicativo integra-se com APIs externas para fornecer informações em tempo real e oferece recursos como telemedicina, verificação de disponibilidade de medicamentos e suporte comunitário.
 
 ## Recursos
 - **Autenticação de Usuário**: Os usuários podem fazer login, registrar-se ou continuar sem uma conta para acesso limitado.
